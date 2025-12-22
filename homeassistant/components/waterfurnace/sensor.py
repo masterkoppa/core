@@ -1,144 +1,149 @@
-"""Support for Waterfurnace."""
+"""Support for WaterFurnace sensors."""
 
 from __future__ import annotations
 
 from homeassistant.components.sensor import (
-    ENTITY_ID_FORMAT,
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
 )
 from homeassistant.const import PERCENTAGE, UnitOfPower, UnitOfTemperature
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
-from homeassistant.util import slugify
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from . import DOMAIN, UPDATE_TOPIC, WaterFurnaceData
+from .const import DOMAIN
+from .coordinator import WaterFurnaceDataUpdateCoordinator
+from .models import WaterFurnaceConfigEntry
 
-SENSORS = [
-    SensorEntityDescription(name="Furnace Mode", key="mode", icon="mdi:gauge"),
+PARALLEL_UPDATES = 0
+
+SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
-        name="Total Power",
+        key="mode",
+        translation_key="mode",
+        icon="mdi:gauge",
+    ),
+    SensorEntityDescription(
         key="totalunitpower",
+        translation_key="totalunitpower",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
-        name="Active Setpoint",
         key="tstatactivesetpoint",
+        translation_key="tstatactivesetpoint",
         native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
         device_class=SensorDeviceClass.TEMPERATURE,
     ),
     SensorEntityDescription(
-        name="Leaving Air",
         key="leavingairtemp",
+        translation_key="leavingairtemp",
         native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
         device_class=SensorDeviceClass.TEMPERATURE,
     ),
     SensorEntityDescription(
-        name="Room Temp",
         key="tstatroomtemp",
+        translation_key="tstatroomtemp",
         native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
         device_class=SensorDeviceClass.TEMPERATURE,
     ),
     SensorEntityDescription(
-        name="Loop Temp",
         key="enteringwatertemp",
+        translation_key="enteringwatertemp",
         native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
         device_class=SensorDeviceClass.TEMPERATURE,
     ),
     SensorEntityDescription(
-        name="Humidity Set Point",
         key="tstathumidsetpoint",
+        translation_key="tstathumidsetpoint",
         icon="mdi:water-percent",
         native_unit_of_measurement=PERCENTAGE,
     ),
     SensorEntityDescription(
-        name="Humidity",
         key="tstatrelativehumidity",
+        translation_key="tstatrelativehumidity",
         icon="mdi:water-percent",
         native_unit_of_measurement=PERCENTAGE,
     ),
     SensorEntityDescription(
-        name="Compressor Power",
         key="compressorpower",
+        translation_key="compressorpower",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
-        name="Fan Power",
         key="fanpower",
+        translation_key="fanpower",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
-        name="Aux Power",
         key="auxpower",
+        translation_key="auxpower",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
-        name="Loop Pump Power",
         key="looppumppower",
+        translation_key="looppumppower",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
-        name="Compressor Speed", key="actualcompressorspeed", icon="mdi:speedometer"
+        key="actualcompressorspeed",
+        translation_key="actualcompressorspeed",
+        icon="mdi:speedometer",
     ),
     SensorEntityDescription(
-        name="Fan Speed", key="airflowcurrentspeed", icon="mdi:fan"
+        key="airflowcurrentspeed",
+        translation_key="airflowcurrentspeed",
+        icon="mdi:fan",
     ),
-]
+)
 
 
-def setup_platform(
+async def async_setup_entry(
     hass: HomeAssistant,
-    config: ConfigType,
-    add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None,
+    entry: WaterFurnaceConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up the Waterfurnace sensor."""
-    if discovery_info is None:
-        return
+    """Set up WaterFurnace sensor based on a config entry."""
+    coordinator: WaterFurnaceDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    client = hass.data[DOMAIN]
+    async_add_entities(
+        WaterFurnaceSensor(coordinator, description, entry) for description in SENSORS
+    )
 
-    add_entities(WaterFurnaceSensor(client, description) for description in SENSORS)
 
+class WaterFurnaceSensor(
+    CoordinatorEntity[WaterFurnaceDataUpdateCoordinator], SensorEntity
+):
+    """Implementing the WaterFurnace sensor."""
 
-class WaterFurnaceSensor(SensorEntity):
-    """Implementing the Waterfurnace sensor."""
-
-    _attr_should_poll = False
+    _attr_has_entity_name = True
 
     def __init__(
-        self, client: WaterFurnaceData, description: SensorEntityDescription
+        self,
+        coordinator: WaterFurnaceDataUpdateCoordinator,
+        description: SensorEntityDescription,
+        entry: WaterFurnaceConfigEntry,
     ) -> None:
         """Initialize the sensor."""
-        self.client = client
+        super().__init__(coordinator)
         self.entity_description = description
 
-        # This ensures that the sensors are isolated per waterfurnace unit
-        self.entity_id = ENTITY_ID_FORMAT.format(
-            f"wf_{slugify(self.client.unit)}_{slugify(description.key)}"
+        # Set unique ID based on device GWID and sensor key
+        self._attr_unique_id = f"{coordinator.gwid}_{description.key}"
+
+        # Link to device
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, coordinator.gwid)},
         )
 
-    async def async_added_to_hass(self) -> None:
-        """Register callbacks."""
-        self.async_on_remove(
-            async_dispatcher_connect(
-                self.hass, UPDATE_TOPIC, self.async_update_callback
-            )
-        )
-
-    @callback
-    def async_update_callback(self):
-        """Update state."""
-        if self.client.data is not None:
-            self._attr_native_value = getattr(
-                self.client.data, self.entity_description.key, None
-            )
-            self.async_write_ha_state()
+    @property
+    def native_value(self) -> float | int | str | None:
+        """Return the state of the sensor."""
+        # Get the value from coordinator data using the sensor key
+        return self.coordinator.data.get(self.entity_description.key)

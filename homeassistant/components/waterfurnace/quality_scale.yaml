@@ -1,0 +1,105 @@
+rules:
+  # Bronze
+  action-setup:
+    status: exempt
+    comment: |
+      No custom actions are defined.
+  appropriate-polling: done
+  brands:
+    status: exempt
+    comment: |
+      No brands data needed for this cloud service.
+  common-modules: done
+  config-flow-test-coverage: done
+  config-flow: done
+  dependency-transparency: done
+  docs-actions:
+    status: exempt
+    comment: |
+      No custom actions are defined.
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions: done
+  entity-event-setup:
+    status: exempt
+    comment: |
+      No explicit event subscriptions.
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure: done
+  test-before-setup: done
+  unique-config-entry: done
+  # Silver
+  action-exceptions:
+    status: exempt
+    comment: |
+      No custom actions are defined.
+  config-entry-unloading: done
+  docs-configuration-parameters: done
+  docs-installation-parameters: todo
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable: done
+  parallel-updates: done
+  reauthentication-flow: done
+  test-coverage: todo
+  # Gold
+  devices: done
+  diagnostics: todo
+  discovery-update-info:
+    status: exempt
+    comment: |
+      No discovery mechanism.
+  discovery:
+    status: exempt
+    comment: |
+      No discovery mechanism.
+  docs-data-update: todo
+  docs-examples: todo
+  docs-known-limitations: todo
+  docs-supported-devices: todo
+  docs-supported-functions: todo
+  docs-troubleshooting: todo
+  docs-use-cases: todo
+  dynamic-devices:
+    status: exempt
+    comment: |
+      Device type integration.
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: exempt
+    comment: |
+      No noisy/non-essential entities.
+  entity-translations: done
+  exception-translations:
+    status: exempt
+    comment: |
+      No custom exceptions.
+  icon-translations:
+    status: exempt
+    comment: |
+      No dynamic icons.
+  reconfiguration-flow:
+    status: exempt
+    comment: |
+      No reconfigurable parameters.
+  repair-issues:
+    status: exempt
+    comment: |
+      No repair issues needed.
+  stale-devices:
+    status: exempt
+    comment: |
+      Device type integration.
+  # Platinum
+  async-dependency:
+    status: exempt
+    comment: |
+      waterfurnace library is synchronous, wrapped with executor.
+  inject-websession:
+    status: exempt
+    comment: |
+      waterfurnace library does not support websession injection.
+  strict-typing: todo
