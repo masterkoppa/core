@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from homeassistant.components.waterfurnace.const import DOMAIN
+from homeassistant.components.waterfurnace.const import CONF_DEVICE, DOMAIN
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 
 from tests.common import MockConfigEntry, load_json_object_fixture
@@ -70,6 +70,7 @@ def mock_config_entry() -> MockConfigEntry:
         data={
             CONF_USERNAME: "test_user",
             CONF_PASSWORD: "test_password",
+            CONF_DEVICE: 0,
         },
         unique_id="TEST_GWID_12345",
     )

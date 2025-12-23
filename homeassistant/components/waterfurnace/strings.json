@@ -28,10 +28,12 @@
       },
       "user": {
         "data": {
+          "device": "Device",
           "password": "Password",
           "username": "Username"
         },
         "data_description": {
+          "device": "Device index (leave as 0 unless you have multiple devices)",
           "password": "Your WaterFurnace Symphony account password",
           "username": "Your WaterFurnace Symphony account username"
         },

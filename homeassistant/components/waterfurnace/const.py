@@ -5,6 +5,9 @@ from typing import Final
 
 DOMAIN: Final = "waterfurnace"
 
+# Config keys
+CONF_DEVICE: Final = "device"
+
 # Update intervals
 SCAN_INTERVAL: Final = timedelta(seconds=10)
 ERROR_INTERVAL: Final = timedelta(seconds=300)

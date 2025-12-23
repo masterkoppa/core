@@ -14,7 +14,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv, device_registry as dr
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN
+from .const import CONF_DEVICE, DOMAIN
 from .coordinator import WaterFurnaceDataUpdateCoordinator
 from .models import WaterFurnaceConfigEntry, WaterFurnaceData
 
@@ -54,8 +54,9 @@ async def async_setup_entry(
     """Set up WaterFurnace from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
+    device = entry.data.get(CONF_DEVICE, 0)
 
-    client = WaterFurnace(username, password)
+    client = WaterFurnace(username, password, device=device)
 
     try:
         await hass.async_add_executor_job(client.login)

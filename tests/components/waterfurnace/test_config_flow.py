@@ -6,7 +6,7 @@ from unittest.mock import Mock
 from waterfurnace.waterfurnace import WFCredentialError, WFException
 
 from homeassistant import config_entries
-from homeassistant.components.waterfurnace.const import DOMAIN
+from homeassistant.components.waterfurnace.const import CONF_DEVICE, DOMAIN
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
@@ -44,6 +44,7 @@ async def test_user_flow_success(
     assert result["data"] == {
         CONF_USERNAME: "test_user",
         CONF_PASSWORD: "test_password",
+        CONF_DEVICE: 0,
     }
     assert result["result"].unique_id == "TEST_GWID_12345"
 
@@ -432,6 +433,7 @@ async def test_import_flow_success(
     assert result["data"] == {
         CONF_USERNAME: "test_user",
         CONF_PASSWORD: "test_password",
+        CONF_DEVICE: 0,
     }
     assert result["result"].unique_id == "TEST_GWID_12345"
 

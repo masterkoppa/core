@@ -14,7 +14,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 
-from .const import DOMAIN
+from .const import CONF_DEVICE, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Optional(CONF_DEVICE, default=0): int,
     }
 )
 
@@ -33,8 +34,9 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     """
     username = data[CONF_USERNAME]
     password = data[CONF_PASSWORD]
+    device = data.get(CONF_DEVICE, 0)
 
-    client = WaterFurnace(username, password)
+    client = WaterFurnace(username, password, device=device)
 
     try:
         # Login is a blocking call, run in executor
@@ -77,6 +79,10 @@ class WaterFurnaceConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
+            # Ensure device field has a default value if not provided
+            if CONF_DEVICE not in user_input:
+                user_input[CONF_DEVICE] = 0
+
             try:
                 info = await validate_input(self.hass, user_input)
             except CannotConnect:
@@ -98,7 +104,9 @@ class WaterFurnaceConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=STEP_USER_DATA_SCHEMA,
+            data_schema=self.add_suggested_values_to_schema(
+                STEP_USER_DATA_SCHEMA, user_input
+            ),
             errors=errors,
         )
 
@@ -154,8 +162,13 @@ class WaterFurnaceConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_import(self, import_data: dict[str, Any]) -> ConfigFlowResult:
         """Handle import from YAML configuration."""
+        # Ensure device field has a default value if not provided
+        data = {**import_data}
+        if CONF_DEVICE not in data:
+            data[CONF_DEVICE] = 0
+
         try:
-            info = await validate_input(self.hass, import_data)
+            info = await validate_input(self.hass, data)
         except (CannotConnect, InvalidAuth):
             _LOGGER.error(
                 "Failed to import WaterFurnace configuration from YAML. "
@@ -172,7 +185,7 @@ class WaterFurnaceConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_create_entry(
             title=info["title"],
-            data=import_data,
+            data=data,
         )
 
 
