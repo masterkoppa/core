@@ -50,15 +50,11 @@ class WaterFurnaceDataUpdateCoordinator(DataUpdateCoordinator[dict]):
         """
         try:
             # Run the blocking read() call in the executor
-            data = await self.hass.async_add_executor_job(self.client.read)
+            data = await self._load_data()
 
             if self._unavailable_logged:
                 _LOGGER.info("WaterFurnace device %s is back online", self.gwid)
                 self._unavailable_logged = False
-
-            # Convert the data object to a dictionary of attributes
-            # The data object has attributes for each sensor value
-            return vars(data) if data else {}
 
         except WFCredentialError as err:
             # Authentication failed - credentials need to be refreshed
@@ -86,19 +82,20 @@ class WaterFurnaceDataUpdateCoordinator(DataUpdateCoordinator[dict]):
                 # Attempt to reconnect
                 await self.hass.async_add_executor_job(self.client.login)
                 # Try reading again after reconnection
-                data = await self.hass.async_add_executor_job(self.client.read)
+                data = await self._load_data()
 
                 if self._unavailable_logged:
                     _LOGGER.info("WaterFurnace device %s reconnected", self.gwid)
                     self._unavailable_logged = False
-
-                return vars(data) if data else {}
 
             except (WFCredentialError, WFException) as reconnect_err:
                 # Reconnection failed
                 raise UpdateFailed(
                     f"Failed to reconnect to WaterFurnace device {self.gwid}: {reconnect_err}"
                 ) from reconnect_err
+
+            else:
+                return data
 
         except Exception as err:
             # Unexpected error
@@ -111,3 +108,23 @@ class WaterFurnaceDataUpdateCoordinator(DataUpdateCoordinator[dict]):
             raise UpdateFailed(
                 f"Unexpected error for WaterFurnace device {self.gwid}: {err}"
             ) from err
+
+        else:
+            return data
+
+    async def _load_data(self) -> dict:
+        """Fetch from WaterFurnace, and convert the data for sensor use.
+
+        Consumers are expected to handle exceptions
+        """
+        # Run the blocking read() call in the executor
+        data = await self.hass.async_add_executor_job(self.client.read)
+        if not data:
+            return {}
+
+        # Convert the data object to a dictionary of attributes
+        # The data object has attributes for each sensor value
+        result = vars(data) if data else {}
+        # mode has special handling to convert the value to a string
+        result["mode"] = data.mode
+        return result

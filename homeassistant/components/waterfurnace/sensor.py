@@ -110,7 +110,7 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up WaterFurnace sensor based on a config entry."""
-    coordinator: WaterFurnaceDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data.coordinator
 
     async_add_entities(
         WaterFurnaceSensor(coordinator, description, entry) for description in SENSORS
