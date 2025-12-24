@@ -12,5 +12,10 @@
   "auxpower": 0,
   "looppumppower": 50,
   "actualcompressorspeed": 1200,
-  "airflowcurrentspeed": 850
+  "airflowcurrentspeed": 850,
+  "tstatdehumidsetpoint": 50,
+  "tstatheatingsetpoint": 68,
+  "tstatcoolingsetpoint": 74,
+  "leavingwatertemp": 38.5,
+  "waterflowrate": 12.5
 }

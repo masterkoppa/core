@@ -7,7 +7,12 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
 )
-from homeassistant.const import PERCENTAGE, UnitOfPower, UnitOfTemperature
+from homeassistant.const import (
+    PERCENTAGE,
+    UnitOfPower,
+    UnitOfTemperature,
+    UnitOfVolumeFlowRate,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -100,6 +105,36 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         key="airflowcurrentspeed",
         translation_key="airflowcurrentspeed",
         icon="mdi:fan",
+    ),
+    SensorEntityDescription(
+        key="tstatdehumidsetpoint",
+        translation_key="tstatdehumidsetpoint",
+        icon="mdi:water-percent",
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    SensorEntityDescription(
+        key="tstatheatingsetpoint",
+        translation_key="tstatheatingsetpoint",
+        native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
+        device_class=SensorDeviceClass.TEMPERATURE,
+    ),
+    SensorEntityDescription(
+        key="tstatcoolingsetpoint",
+        translation_key="tstatcoolingsetpoint",
+        native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
+        device_class=SensorDeviceClass.TEMPERATURE,
+    ),
+    SensorEntityDescription(
+        key="leavingwatertemp",
+        translation_key="leavingwatertemp",
+        native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
+        device_class=SensorDeviceClass.TEMPERATURE,
+    ),
+    SensorEntityDescription(
+        key="waterflowrate",
+        translation_key="waterflowrate",
+        native_unit_of_measurement=UnitOfVolumeFlowRate.GALLONS_PER_MINUTE,
+        icon="mdi:waves-arrow-right",
     ),
 )
 

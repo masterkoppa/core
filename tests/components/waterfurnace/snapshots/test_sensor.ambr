@@ -207,6 +207,109 @@
     'state': '1200',
   })
 # ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_cooling_set_point-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': set({
+    }),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ANY>,
+    'device_class': None,
+    'device_id': <ANY>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_cooling_set_point',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'options': dict({
+      'sensor': dict({
+        'suggested_display_precision': 1,
+      }),
+    }),
+    'original_device_class': <SensorDeviceClass.TEMPERATURE: 'temperature'>,
+    'original_icon': None,
+    'original_name': 'Cooling set point',
+    'platform': 'waterfurnace',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'tstatcoolingsetpoint',
+    'unique_id': 'TEST_GWID_12345_tstatcoolingsetpoint',
+    'unit_of_measurement': <UnitOfTemperature.CELSIUS: '°C'>,
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_cooling_set_point-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      'device_class': 'temperature',
+      'friendly_name': 'WaterFurnace TEST_GWID_12345 Cooling set point',
+      'unit_of_measurement': <UnitOfTemperature.CELSIUS: '°C'>,
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_cooling_set_point',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '23.3333333333333',
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_dehumidification_set_point-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': set({
+    }),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ANY>,
+    'device_class': None,
+    'device_id': <ANY>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_dehumidification_set_point',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': 'mdi:water-percent',
+    'original_name': 'Dehumidification set point',
+    'platform': 'waterfurnace',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'tstatdehumidsetpoint',
+    'unique_id': 'TEST_GWID_12345_tstatdehumidsetpoint',
+    'unit_of_measurement': '%',
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_dehumidification_set_point-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      'friendly_name': 'WaterFurnace TEST_GWID_12345 Dehumidification set point',
+      'icon': 'mdi:water-percent',
+      'unit_of_measurement': '%',
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_dehumidification_set_point',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '50',
+  })
+# ---
 # name: test_sensors[sensor.waterfurnace_test_gwid_12345_fan_power-entry]
   EntityRegistryEntrySnapshot({
     'aliases': set({
@@ -356,6 +459,59 @@
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'heating',
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_heating_set_point-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': set({
+    }),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ANY>,
+    'device_class': None,
+    'device_id': <ANY>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_heating_set_point',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'options': dict({
+      'sensor': dict({
+        'suggested_display_precision': 1,
+      }),
+    }),
+    'original_device_class': <SensorDeviceClass.TEMPERATURE: 'temperature'>,
+    'original_icon': None,
+    'original_name': 'Heating set point',
+    'platform': 'waterfurnace',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'tstatheatingsetpoint',
+    'unique_id': 'TEST_GWID_12345_tstatheatingsetpoint',
+    'unit_of_measurement': <UnitOfTemperature.CELSIUS: '°C'>,
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_heating_set_point-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      'device_class': 'temperature',
+      'friendly_name': 'WaterFurnace TEST_GWID_12345 Heating set point',
+      'unit_of_measurement': <UnitOfTemperature.CELSIUS: '°C'>,
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_heating_set_point',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '20.0',
   })
 # ---
 # name: test_sensors[sensor.waterfurnace_test_gwid_12345_humidity-entry]
@@ -509,6 +665,59 @@
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': '43.6111111111111',
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_leaving_water_temperature-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': set({
+    }),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ANY>,
+    'device_class': None,
+    'device_id': <ANY>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_leaving_water_temperature',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'options': dict({
+      'sensor': dict({
+        'suggested_display_precision': 1,
+      }),
+    }),
+    'original_device_class': <SensorDeviceClass.TEMPERATURE: 'temperature'>,
+    'original_icon': None,
+    'original_name': 'Leaving water temperature',
+    'platform': 'waterfurnace',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'leavingwatertemp',
+    'unique_id': 'TEST_GWID_12345_leavingwatertemp',
+    'unit_of_measurement': <UnitOfTemperature.CELSIUS: '°C'>,
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_leaving_water_temperature-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      'device_class': 'temperature',
+      'friendly_name': 'WaterFurnace TEST_GWID_12345 Leaving water temperature',
+      'unit_of_measurement': <UnitOfTemperature.CELSIUS: '°C'>,
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_leaving_water_temperature',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '3.61111111111111',
   })
 # ---
 # name: test_sensors[sensor.waterfurnace_test_gwid_12345_loop_pump_power-entry]
@@ -721,5 +930,55 @@
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': '1500',
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_water_flow_rate-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': set({
+    }),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ANY>,
+    'device_class': None,
+    'device_id': <ANY>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_water_flow_rate',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': 'mdi:waves-arrow-right',
+    'original_name': 'Water flow rate',
+    'platform': 'waterfurnace',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'waterflowrate',
+    'unique_id': 'TEST_GWID_12345_waterflowrate',
+    'unit_of_measurement': <UnitOfVolumeFlowRate.GALLONS_PER_MINUTE: 'gal/min'>,
+  })
+# ---
+# name: test_sensors[sensor.waterfurnace_test_gwid_12345_water_flow_rate-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      'friendly_name': 'WaterFurnace TEST_GWID_12345 Water flow rate',
+      'icon': 'mdi:waves-arrow-right',
+      'unit_of_measurement': <UnitOfVolumeFlowRate.GALLONS_PER_MINUTE: 'gal/min'>,
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.waterfurnace_test_gwid_12345_water_flow_rate',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '12.5',
   })
 # ---

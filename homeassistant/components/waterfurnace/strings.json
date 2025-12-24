@@ -65,6 +65,9 @@
       "leavingairtemp": {
         "name": "Leaving air temperature"
       },
+      "leavingwatertemp": {
+        "name": "Leaving water temperature"
+      },
       "looppumppower": {
         "name": "Loop pump power"
       },
@@ -77,6 +80,15 @@
       "tstatactivesetpoint": {
         "name": "Active setpoint"
       },
+      "tstatcoolingsetpoint": {
+        "name": "Cooling set point"
+      },
+      "tstatdehumidsetpoint": {
+        "name": "Dehumidification set point"
+      },
+      "tstatheatingsetpoint": {
+        "name": "Heating set point"
+      },
       "tstathumidsetpoint": {
         "name": "Humidity set point"
       },
@@ -85,6 +97,9 @@
       },
       "tstatroomtemp": {
         "name": "Room temperature"
+      },
+      "waterflowrate": {
+        "name": "Water flow rate"
       }
     }
   }
