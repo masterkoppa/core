@@ -77,3 +77,38 @@ async def test_coordinator_updates(
     updated_value = state.state
     assert updated_value == "cooling"
     assert updated_value != initial_value
+
+
+@pytest.mark.usefixtures("entity_registry_enabled_by_default", "init_integration")
+async def test_sensor_availability(
+    hass: HomeAssistant,
+    mock_waterfurnace_client: Mock,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test that sensors handle missing data correctly by becoming unavailable."""
+    # Verify initial state - sensors should be available
+    state = hass.states.get("sensor.waterfurnace_test_gwid_12345_water_flow_rate")
+    assert state is not None
+    assert state.state == "12.5"
+
+    # Update mock data with missing waterflowrate (simulating device not reporting it)
+    device_data = {
+        "mode": "heating",
+        "totalunitpower": 1500,
+        "tstatactivesetpoint": 72,
+        # waterflowrate is intentionally missing
+    }
+    mock_data = Mock()
+    for key, value in device_data.items():
+        setattr(mock_data, key, value)
+    mock_waterfurnace_client.read.return_value = mock_data
+
+    # Advance time to trigger coordinator update
+    freezer.tick(15)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    # Verify sensor is now unavailable
+    state = hass.states.get("sensor.waterfurnace_test_gwid_12345_water_flow_rate")
+    assert state is not None
+    assert state.state == "unavailable"

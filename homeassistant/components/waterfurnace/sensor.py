@@ -100,11 +100,13 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         key="actualcompressorspeed",
         translation_key="actualcompressorspeed",
         icon="mdi:speedometer",
+        entity_registry_enabled_default=False,
     ),
     SensorEntityDescription(
         key="airflowcurrentspeed",
         translation_key="airflowcurrentspeed",
         icon="mdi:fan",
+        entity_registry_enabled_default=False,
     ),
     SensorEntityDescription(
         key="tstatdehumidsetpoint",
@@ -117,12 +119,14 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         translation_key="tstatheatingsetpoint",
         native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
         device_class=SensorDeviceClass.TEMPERATURE,
+        entity_registry_enabled_default=False,
     ),
     SensorEntityDescription(
         key="tstatcoolingsetpoint",
         translation_key="tstatcoolingsetpoint",
         native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
         device_class=SensorDeviceClass.TEMPERATURE,
+        entity_registry_enabled_default=False,
     ),
     SensorEntityDescription(
         key="leavingwatertemp",
@@ -175,6 +179,15 @@ class WaterFurnaceSensor(
         # Link to device
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, coordinator.gwid)},
+        )
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return (
+            super().available
+            and self.entity_description.key in self.coordinator.data
+            and self.coordinator.data.get(self.entity_description.key) is not None
         )
 
     @property
