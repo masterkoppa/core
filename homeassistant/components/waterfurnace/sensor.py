@@ -11,11 +11,12 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import PERCENTAGE, UnitOfPower, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import slugify
 
-from . import UPDATE_TOPIC, WaterFurnaceConfigEntry, WaterFurnaceData
+from . import DOMAIN, UPDATE_TOPIC, WaterFurnaceConfigEntry, WaterFurnaceData
 
 SENSORS = [
     SensorEntityDescription(name="Furnace Mode", key="mode", icon="mdi:gauge"),
@@ -135,6 +136,16 @@ class WaterFurnaceSensor(SensorEntity):
         # This ensures that the sensors are isolated per waterfurnace unit
         self.entity_id = ENTITY_ID_FORMAT.format(
             f"wf_{slugify(self.client.unit)}_{slugify(description.key)}"
+        )
+        self._attr_unique_id = f"{self.client.unit}_{description.key}"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.client.unit)},
+            name="WaterFurnace System",
+            manufacturer="WaterFurnace",
         )
 
     async def async_added_to_hass(self) -> None:
