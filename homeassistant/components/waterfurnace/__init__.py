@@ -13,6 +13,8 @@ from waterfurnace.waterfurnace import WaterFurnace, WFCredentialError, WFExcepti
 from homeassistant.components import persistent_notification
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import (
+    CONF_DEVICE,
+    CONF_LOCATION,
     CONF_PASSWORD,
     CONF_USERNAME,
     EVENT_HOMEASSISTANT_STOP,
@@ -108,8 +110,10 @@ async def async_setup_entry(
     """Set up WaterFurnace from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
+    device = entry.data.get(CONF_DEVICE, 0)
+    location = entry.data.get(CONF_LOCATION, 0)
 
-    client = WaterFurnace(username, password)
+    client = WaterFurnace(username, password, device=device, location=location)
 
     try:
         await hass.async_add_executor_job(client.login)

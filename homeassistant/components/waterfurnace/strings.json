@@ -4,14 +4,49 @@
       "already_configured": "[%key:common::config_flow::abort::already_configured_account%]",
       "cannot_connect": "Please verify your credentials.",
       "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "no_devices_found": "No WaterFurnace devices found for this account",
+      "reconfigure_successful": "[%key:common::config_flow::abort::reconfigure_successful%]",
       "unknown": "Unexpected error, please try again."
     },
     "error": {
       "cannot_connect": "Failed to connect to WaterFurnace service",
       "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "invalid_selection": "Invalid device selection",
+      "no_devices_found": "No WaterFurnace devices found for this account",
       "unknown": "[%key:common::config_flow::error::unknown%]"
     },
     "step": {
+      "device": {
+        "data": {
+          "device": "Device index",
+          "location": "Location index"
+        },
+        "data_description": {
+          "device": "If you have multiple WaterFurnace systems, enter the device index (default: 0)",
+          "location": "If you have multiple locations, enter the location index (default: 0)"
+        },
+        "description": "Configure device and location indices for account {username}. Most users can leave these at the default values (0).",
+        "title": "Configure device and location"
+      },
+      "reconfigure": {
+        "data": {
+          "device": "Device index",
+          "location": "Location index"
+        },
+        "data_description": {
+          "device": "If you have multiple WaterFurnace systems, enter the device index (default: 0)",
+          "location": "If you have multiple locations, enter the location index (default: 0)"
+        },
+        "description": "Update device and location indices for account {username}.",
+        "title": "Reconfigure Waterfurnace device and location"
+      },
+      "select_device": {
+        "data": {
+          "device_selection": "Device"
+        },
+        "description": "Select the WaterFurnace device to configure.",
+        "title": "Select device"
+      },
       "user": {
         "data": {
           "password": "[%key:common::config_flow::data::password%]",
