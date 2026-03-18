@@ -8,7 +8,7 @@ import pytest
 from syrupy.assertion import SnapshotAssertion
 from waterfurnace.waterfurnace import WFException
 
-from homeassistant.components.waterfurnace.const import UPDATE_INTERVAL
+from homeassistant.components.waterfurnace.const import DOMAIN, UPDATE_INTERVAL
 from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
@@ -33,10 +33,16 @@ async def test_sensors(
 async def test_sensor(
     hass: HomeAssistant,
     mock_waterfurnace_client: Mock,
+    entity_registry: er.EntityRegistry,
     freezer: FrozenDateTimeFactory,
 ) -> None:
     """Test states of the sensor."""
-    state = hass.states.get("sensor.test_abc_type_total_power")
+    entity_id = entity_registry.async_get_entity_id(
+        "sensor", DOMAIN, "TEST_GWID_12345_totalunitpower"
+    )
+    assert entity_id
+
+    state = hass.states.get(entity_id)
     assert state
     assert state.state == "1500"
 
@@ -45,7 +51,7 @@ async def test_sensor(
     async_fire_time_changed(hass)
     await hass.async_block_till_done()
 
-    state = hass.states.get("sensor.test_abc_type_total_power")
+    state = hass.states.get(entity_id)
     assert state
     assert state.state == "2000"
 
@@ -61,11 +67,15 @@ async def test_sensor(
 async def test_availability(
     hass: HomeAssistant,
     mock_waterfurnace_client: Mock,
+    entity_registry: er.EntityRegistry,
     freezer: FrozenDateTimeFactory,
     side_effect: Exception,
 ) -> None:
     """Ensure that we mark the entities unavailable correctly when service is offline."""
-    entity_id = "sensor.test_abc_type_total_power"
+    entity_id = entity_registry.async_get_entity_id(
+        "sensor", "waterfurnace", "TEST_GWID_12345_totalunitpower"
+    )
+    assert entity_id
 
     state = hass.states.get(entity_id)
     assert state
