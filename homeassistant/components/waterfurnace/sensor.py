@@ -21,6 +21,8 @@ from . import WaterFurnaceConfigEntry
 from .coordinator import WaterFurnaceCoordinator
 from .entity import WaterFurnaceEntity
 
+PARALLEL_UPDATES = 0
+
 SENSORS = [
     SensorEntityDescription(
         key="mode",
