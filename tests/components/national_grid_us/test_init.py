@@ -6,7 +6,7 @@ from py_nationalgrid.exceptions import CannotConnectError, InvalidAuthError
 import pytest
 from pytest_homeassistant.common import MockConfigEntry
 
-from homeassistant.config_entries import ConfigEntryState
+from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.core import HomeAssistant
 
 from .conftest import ENTITY_ELECTRIC_COST, ENTITY_ELECTRIC_USAGE, mock_billing_account
@@ -44,6 +44,9 @@ async def test_setup_entry_auth_error(
     await hass.async_block_till_done()
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_ERROR
+    flows = hass.config_entries.flow.async_progress()
+    assert len(flows) == 1
+    assert flows[0]["context"]["source"] == SOURCE_REAUTH
 
 
 @pytest.mark.parametrize(

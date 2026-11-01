@@ -2,7 +2,8 @@
   "config": {
     "abort": {
       "already_configured": "[%key:common::config_flow::abort::already_configured_account%]",
-      "no_accounts_found": "Login succeeded but no National Grid accounts were found on this profile."
+      "no_accounts_found": "Login succeeded but no National Grid accounts were found on this profile.",
+      "wrong_account": "These credentials do not include the billing account being re-authenticated."
     },
     "error": {
       "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
@@ -10,6 +11,18 @@
       "unknown": "[%key:common::config_flow::error::unknown%]"
     },
     "step": {
+      "reauth_confirm": {
+        "data": {
+          "password": "[%key:common::config_flow::data::password%]",
+          "username": "[%key:common::config_flow::data::username%]"
+        },
+        "data_description": {
+          "password": "The password for your National Grid account.",
+          "username": "The username for your National Grid account."
+        },
+        "description": "The saved credentials for billing account {account_id} no longer work. Enter your National Grid credentials again.",
+        "title": "[%key:common::config_flow::title::reauth%]"
+      },
       "select_account": {
         "data": {
           "account_id": "Billing account"
