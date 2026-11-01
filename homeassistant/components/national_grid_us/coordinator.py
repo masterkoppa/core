@@ -23,6 +23,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 
 from .const import CONF_ACCOUNT_ID, DOMAIN
+from .statistics import async_import_meter_statistics
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -120,6 +121,10 @@ class NationalGridDataUpdateCoordinator(
             # Accounts may reuse the same service point number, so key by a
             # composite of account_id and service point to avoid collisions.
             meter_key = f"{account_id}_{service_point}"
+            if meter["hasAmiSmartMeter"]:
+                await async_import_meter_statistics(
+                    self.hass, self.api, meter_key, meter, premise_number, today
+                )
             meters[meter_key] = MeterData(
                 meter=meter,
                 account_id=account_id,

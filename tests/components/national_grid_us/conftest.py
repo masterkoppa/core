@@ -7,6 +7,7 @@ import pytest
 from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.components.national_grid_us.const import CONF_ACCOUNT_ID, DOMAIN
+from homeassistant.components.recorder import Recorder
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 
@@ -22,6 +23,11 @@ ENTITY_ELECTRIC_USAGE = "sensor.electric_meter_1234567890_sp001_latest_daily_usa
 ENTITY_ELECTRIC_COST = "sensor.electric_meter_1234567890_sp001_last_billing_cost"
 ENTITY_GAS_USAGE = "sensor.gas_meter_1234567890_sp002_latest_daily_usage"
 ENTITY_GAS_COST = "sensor.gas_meter_1234567890_sp002_last_billing_cost"
+
+
+@pytest.fixture(autouse=True)
+def auto_enable_recorder(recorder_mock: Recorder) -> None:
+    """Enable the recorder, which the integration depends on."""
 
 
 @pytest.fixture
@@ -125,6 +131,7 @@ def mock_national_grid_api() -> Generator[AsyncMock]:
         client.get_ami_energy_usages.side_effect = lambda **kwargs: mock_ami_usages(
             kwargs["fuel_type"]
         )
+        client.get_ami_energy_usages_15min.return_value = []
         client.get_energy_usage_costs.return_value = mock_costs()
         client.get_linked_accounts.return_value = mock_linked_accounts()
         yield client
