@@ -251,3 +251,90 @@ async def test_already_configured(
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "already_configured"
+
+
+async def _start_reauth(hass: HomeAssistant, config_entry: MockConfigEntry) -> dict:
+    """Start a reauth flow for the config entry."""
+    config_entry.add_to_hass(hass)
+    return await config_entry.start_reauth_flow(hass)
+
+
+async def test_reauth_flow(
+    hass: HomeAssistant,
+    mock_national_grid_api: AsyncMock,
+    mock_config_entry: MockConfigEntry,
+) -> None:
+    """Test reauth stores the new credentials and reloads the entry."""
+    result = await _start_reauth(hass, mock_config_entry)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reauth_confirm"
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_USERNAME: "new@example.com", CONF_PASSWORD: "new-password"},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reauth_successful"
+    assert mock_config_entry.data == {
+        CONF_USERNAME: "new@example.com",
+        CONF_PASSWORD: "new-password",
+        CONF_ACCOUNT_ID: MOCK_ACCOUNT_ID,
+    }
+
+
+@pytest.mark.parametrize(
+    ("error", "reason"),
+    [
+        (InvalidAuthError("Bad creds"), "invalid_auth"),
+        (CannotConnectError("Timeout"), "cannot_connect"),
+        (NationalGridError("Boom"), "unknown"),
+        (ValueError("GraphQL errors encountered"), "unknown"),
+    ],
+)
+async def test_reauth_flow_errors(
+    hass: HomeAssistant,
+    mock_national_grid_api: AsyncMock,
+    mock_config_entry: MockConfigEntry,
+    error: Exception,
+    reason: str,
+) -> None:
+    """Test reauth shows an error and recovers once the login works."""
+    result = await _start_reauth(hass, mock_config_entry)
+
+    mock_national_grid_api.get_linked_accounts.side_effect = error
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: "wrong"},
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": reason}
+
+    mock_national_grid_api.get_linked_accounts.side_effect = None
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_USERNAME: MOCK_USERNAME, CONF_PASSWORD: MOCK_PASSWORD},
+    )
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reauth_successful"
+
+
+async def test_reauth_flow_wrong_account(
+    hass: HomeAssistant,
+    mock_national_grid_api: AsyncMock,
+    mock_config_entry: MockConfigEntry,
+) -> None:
+    """Test reauth aborts when the login no longer includes the account."""
+    mock_national_grid_api.get_linked_accounts.return_value = [
+        {"billingAccountId": MOCK_ACCOUNT_ID_2}
+    ]
+    result = await _start_reauth(hass, mock_config_entry)
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_USERNAME: "other@example.com", CONF_PASSWORD: "other"},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "wrong_account"
+    assert mock_config_entry.data[CONF_USERNAME] == MOCK_USERNAME
