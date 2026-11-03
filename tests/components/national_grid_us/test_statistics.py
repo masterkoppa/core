@@ -63,6 +63,35 @@ def test_bucket_readings_splits_direction_and_sums_hours() -> None:
     assert bucket_readings(readings, is_return=True) == {eleven: 2.0}
 
 
+def test_bucket_readings_across_the_fall_back_rollback() -> None:
+    """Test each reading is placed by its own offset when the clocks go back.
+
+    On the rollback day the API jumps from 01:00-04:00 to 01:15-05:00 and has no
+    records for the repeated hour, so nothing is double counted.
+    """
+    readings = [
+        {"date": "2026-11-01T00:45:00.000-04:00", "quantity": 0.1},
+        {"date": "2026-11-01T01:00:00.000-04:00", "quantity": 0.2},
+        {"date": "2026-11-01T01:15:00.000-05:00", "quantity": 0.3},
+        {"date": "2026-11-01T01:30:00.000-05:00", "quantity": 0.4},
+        {"date": "2026-11-01T01:45:00.000-05:00", "quantity": 0.5},
+        {"date": "2026-11-01T02:00:00.000-05:00", "quantity": 0.6},
+        {"date": "2026-11-01T09:15:00.000-05:00", "quantity": -0.7},
+    ]
+
+    buckets = bucket_readings(readings, is_return=False)
+
+    assert buckets == {
+        datetime(2026, 11, 1, 4, tzinfo=UTC): 0.1,
+        datetime(2026, 11, 1, 5, tzinfo=UTC): 0.2,
+        datetime(2026, 11, 1, 6, tzinfo=UTC): pytest.approx(1.2),
+        datetime(2026, 11, 1, 7, tzinfo=UTC): 0.6,
+    }
+    assert bucket_readings(readings, is_return=True) == {
+        datetime(2026, 11, 1, 14, tzinfo=UTC): 0.7
+    }
+
+
 def test_build_statistics_continues_the_sum() -> None:
     """Test cumulative sums start from the supplied value."""
     ten = datetime(2025, 1, 15, 10, tzinfo=UTC)
