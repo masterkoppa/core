@@ -1,12 +1,13 @@
 """Tests for the National Grid US long-term statistics import."""
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from functools import partial
 from unittest.mock import AsyncMock
 
+from freezegun.api import FrozenDateTimeFactory
 from py_nationalgrid.exceptions import NationalGridError
 import pytest
-from pytest_homeassistant.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
 from pytest_homeassistant.components.recorder.common import async_wait_recording_done
 
 from homeassistant.components.national_grid_us.statistics import (
@@ -169,6 +170,7 @@ async def test_statistics_units(
 @pytest.mark.freeze_time("2025-01-15T13:00:00+00:00")
 async def test_first_import_backfills_all_history(
     hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
     mock_config_entry: MockConfigEntry,
     mock_national_grid_api: AsyncMock,
 ) -> None:
@@ -190,7 +192,9 @@ async def test_first_import_backfills_all_history(
     assert first.count(date(1970, 1, 1)) == 2
 
     mock_national_grid_api.get_ami_energy_usages.reset_mock()
-    await mock_config_entry.runtime_data.async_refresh()
+    freezer.tick(timedelta(hours=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
     await async_wait_recording_done(hass)
 
     later = [
@@ -219,6 +223,7 @@ async def test_statistics_fetch_failure_is_not_fatal(
 @pytest.mark.freeze_time("2025-01-15T13:00:00+00:00")
 async def test_statistics_sum_continues_across_refreshes(
     hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
     mock_config_entry: MockConfigEntry,
     mock_national_grid_api: AsyncMock,
 ) -> None:
@@ -235,7 +240,9 @@ async def test_statistics_sum_continues_across_refreshes(
     mock_national_grid_api.get_ami_energy_usages_15min.return_value = [
         {"date": "2025-01-15T11:00:00.000Z", "quantity": 2.0},
     ]
-    await mock_config_entry.runtime_data.async_refresh()
+    freezer.tick(timedelta(hours=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
 
     usage_id = statistic_id(ELECTRIC_KEY)
     assert (await _async_sums(hass, usage_id))[usage_id] == [1.0, 3.0]
@@ -244,6 +251,7 @@ async def test_statistics_sum_continues_across_refreshes(
 @pytest.mark.freeze_time("2025-01-15T13:00:00+00:00")
 async def test_reimporting_the_same_window_is_idempotent(
     hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
     mock_config_entry: MockConfigEntry,
     mock_national_grid_api: AsyncMock,
 ) -> None:
@@ -258,7 +266,9 @@ async def test_reimporting_the_same_window_is_idempotent(
     await hass.async_block_till_done()
     await async_wait_recording_done(hass)
 
-    await mock_config_entry.runtime_data.async_refresh()
+    freezer.tick(timedelta(hours=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
 
     usage_id = statistic_id(ELECTRIC_KEY)
     assert (await _async_sums(hass, usage_id))[usage_id] == [1.0, 3.0]
